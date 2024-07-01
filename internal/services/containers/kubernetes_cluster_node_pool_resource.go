@@ -1122,10 +1122,7 @@ func resourceKubernetesClusterNodePoolDelete(d *pluginsdk.ResourceData, meta int
 		return err
 	}
 
-	ignorePodDisruptionBudget := true
-	err = client.DeleteThenPoll(ctx, *id, agentpools.DeleteOperationOptions{
-		IgnorePodDisruptionBudget: &ignorePodDisruptionBudget,
-	})
+	err = client.DeleteThenPoll(ctx, *id, agentpools.DefaultDeleteOperationOptions())
 	if err != nil {
 		return fmt.Errorf("deleting %s: %+v", *id, err)
 	}
@@ -1160,14 +1157,13 @@ func upgradeSettingsSchema() *pluginsdk.Schema {
 	}
 	return &pluginsdk.Schema{
 		Type:     pluginsdk.TypeList,
-		Optional: true,
+		Required: true,
 		MaxItems: 1,
 		Elem: &pluginsdk.Resource{
 			Schema: map[string]*pluginsdk.Schema{
 				"max_surge": {
 					Type:     pluginsdk.TypeString,
-					Optional: true,
-					Default:  "10%",
+					Required: true,
 				},
 				"drain_timeout_in_minutes": {
 					Type:     pluginsdk.TypeInt,
